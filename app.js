@@ -7,18 +7,18 @@ const port = process.env.PORT || 3000;
 app.use(express.json());
 
 // Importar rutas
-const peliculasRoutes = require('./db/routes/peliculasRoutes');
-const usuariosRoutes = require('./db/routes/usuariosRoutes');
+const moviesRoutes = require('./db/routes/moviesRoutes');
+const usersRoutes = require('./db/routes/usersRoutes');
 
 // Usar rutas
-app.use('/peliculas', peliculasRoutes);
-app.use('/usuarios', usuariosRoutes);
+app.use('/movies', moviesRoutes);
+app.use('/users', usersRoutes);
 
 // Ruta de prueba
 app.get('/', (req, res) => {
-  res.send('API de Gestión de Películas');
+  res.send('Movie Management API');
 });
 
 app.listen(port, () => {
-  console.log(`Servidor corriendo en puerto ${port}`);
+  console.log(`Server running on port ${port}`);
 });
