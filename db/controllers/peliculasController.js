@@ -4,7 +4,6 @@ const peliculasService = require('../services/peliculasService');
 class PeliculasController {
   async getAllPeliculas(req, res) {
     try {
-      // Para filtrar por título y categoría, paginar y ordenar:
       const { titulo, categoria, page, limit, orden } = req.query;
       const peliculas = await peliculasService.getAllPeliculas({ titulo, categoria, page, limit, orden });
       res.json(peliculas);

@@ -1,69 +1,56 @@
-// services/peliculasService.js
-const pool = require('../../db');
+const PeliculasRepository = require('../repositories/peliculasRepository');
+const peliculasRepository = new PeliculasRepository();
 
 const PeliculasService = {
-  getAllPeliculas: async ({ titulo, categoria, page = 1, limit = 5, orden = 'ASC' }) => {
-    const offset = (page - 1) * limit;
-    let sql = `
-      SELECT p.*, c.nombre as nombreCategoria 
-      FROM Peliculas p
-      JOIN Categorias c ON p.categoriaId = c.id
-      WHERE 1=1
-    `;
-    const params = [];
-
-    if (titulo) {
-      sql += ' AND p.titulo LIKE ?';
-      params.push(`%${titulo}%`);
-    }
+  // Obtiene todas las películas, aplicando filtros si se envían
+  async getAllPeliculas({ titulo, categoria, page = 1, limit = 5, orden = 'ASC' }) {
     if (categoria) {
-      sql += ' AND c.nombre = ?';
-      params.push(categoria);
+      return await peliculasRepository.findByCategory(categoria);
+    } else {
+      return await peliculasRepository.getAll();
     }
-    sql += ` ORDER BY p.fechaEstreno ${orden} LIMIT ? OFFSET ?`;
-    params.push(parseInt(limit), parseInt(offset));
-
-    const [rows] = await pool.query(sql, params);
-    return rows;
   },
 
+  // Obtiene una película por su ID
   getPeliculaById: async (id) => {
-    const [rows] = await pool.query('SELECT * FROM Peliculas WHERE id = ?', [id]);
-    return rows[0];
+    return await peliculasRepository.getById(id);
   },
 
-  createPelicula: async (data) => {
-    const { titulo, descripcion, fechaEstreno, categoriaId } = data;
-    const [result] = await pool.query(
-      'INSERT INTO Peliculas (titulo, descripcion, fechaEstreno, categoriaId) VALUES (?, ?, ?, ?)',
-      [titulo, descripcion, fechaEstreno, categoriaId]
-    );
-    return { id: result.insertId, ...data };
+  // Crea una película, convirtiendo el nombre de la categoría en su ID
+  async createPelicula(data) {
+    const { titulo, descripcion, fechaEstreno, categoriaNombre } = data;
+
+    // Buscar el ID de la categoría a partir del nombre
+    const categoriaId = await peliculasRepository.findCategoriaIdByNombre(categoriaNombre);
+    if (!categoriaId) {
+      const nuevaCategoria = await categoriasRepository.createCategoria({ nombre: categoriaNombre });
+      categoriaId = nuevaCategoria.id;
+    }
+
+    // Crear la película con el ID real de la categoría
+    const peliculaCreada = await peliculasRepository.createPelicula({
+      titulo,
+      descripcion,
+      fechaEstreno,
+      categoriaId
+    });
+
+    return peliculaCreada;
   },
 
+  // Actualiza una película por su ID
   updatePelicula: async (id, data) => {
-    const { titulo, descripcion, fechaEstreno, categoriaId } = data;
-    const [result] = await pool.query(
-      'UPDATE Peliculas SET titulo = ?, descripcion = ?, fechaEstreno = ?, categoriaId = ? WHERE id = ?',
-      [titulo, descripcion, fechaEstreno, categoriaId, id]
-    );
-    return result;
+    return await peliculasRepository.updateById(id, data);
   },
 
+  // Elimina una película por su ID
   deletePelicula: async (id) => {
-    const [result] = await pool.query('DELETE FROM Peliculas WHERE id = ?', [id]);
-    return result;
+    return await peliculasRepository.deletePelicula(id);
   },
 
+  // Obtiene las películas que se consideran novedades (por ejemplo, estrenadas hace menos de 3 semanas)
   getNovedades: async () => {
-    const [rows] = await pool.query(`
-      SELECT p.*, c.nombre as nombreCategoria
-      FROM Peliculas p
-      JOIN Categorias c ON p.categoriaId = c.id
-      WHERE p.fechaEstreno >= DATE_SUB(CURDATE(), INTERVAL 3 WEEK)
-      ORDER BY p.fechaEstreno DESC
-    `);
-    return rows;
+    return await peliculasRepository.getNovedades();
   },
 };
 

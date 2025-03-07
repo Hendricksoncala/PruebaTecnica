@@ -3,8 +3,16 @@ const express = require('express');
 const router = express.Router();
 const peliculasController = require('../controllers/peliculasController');
 
-// Obtener todas las películas (con filtros, paginación y orden)
-router.get('/', (req, res) => peliculasController.getAllPeliculas(req, res));
+router.get('/', async (req, res) => {
+    try {
+      const { titulo, categoria, page, limit, orden } = req.query;
+
+      const peliculas = await peliculasController.getAllPeliculas(req, res);
+      res.json(peliculas);
+    } catch (error) {
+      res.status(500).json({ error: 'Error al obtener películas' });
+    }
+  });
 
 // Obtener una película por ID
 router.get('/:id', (req, res) => peliculasController.getPeliculaById(req, res));
