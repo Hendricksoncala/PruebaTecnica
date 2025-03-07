@@ -11,6 +11,17 @@ class PeliculasRepository {
     return rows[0];
   }
 
+  async findByTitulo(titulo) {
+    const sql = `
+      SELECT p.*, c.nombre as nombreCategoria
+      FROM Peliculas p
+      JOIN Categorias c ON p.categoriaId = c.id
+      WHERE p.titulo = ?
+    `;
+    const [rows] = await pool.query(sql, [titulo]);
+    return rows;
+  }
+
   async findCategoriaIdByNombre(nombre) {
     const [rows] = await pool.query(
       'SELECT id FROM Categorias WHERE nombre = ?',
