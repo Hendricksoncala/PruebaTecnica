@@ -1,63 +1,77 @@
+// services/moviesService.js
 const MoviesRepository = require('../repositories/moviesRepository');
+const CategoriesRepository = require('../repositories/categoriesRepository');
+
 const moviesRepository = new MoviesRepository();
+const categoriesRepository = new CategoriesRepository();
 
 const MoviesService = {
-  // Obtiene todas las películas, aplicando filtros si se envían
   async getAllMovies({ title, category, page = 1, limit = 5, order = 'ASC' }) {
     if (category) {
       return await moviesRepository.findByCategory(category);
+    } else if (title) {
+      return await moviesRepository.findByTitle(title);
     } else {
       return await moviesRepository.getAll();
     }
   },
 
-  // Busca películas por título
-  async getMovieByTitle(title) {
-    const movies = await moviesRepository.findByTitle(title);
-    return movies;
-  },
-
-  // Obtiene una película por su ID
-  getMovieById: async (id) => {
+  async getMovieById(id) {
     return await moviesRepository.getById(id);
   },
 
-  // Crea una película, convirtiendo el nombre de la categoría en su ID
   async createMovie(data) {
     const { title, description, releaseDate, categoryName } = data;
-
-    // Buscar el ID de la categoría a partir del nombre
-    let categoryId = await moviesRepository.findCategoryIdByName(categoryName);
+    let categoryId = await categoriesRepository.findCategoryIdByName(categoryName);
     if (!categoryId) {
       const newCategory = await categoriesRepository.createCategory({ name: categoryName });
       categoryId = newCategory.id;
     }
-
-    // Crear la película con el ID real de la categoría
     const createdMovie = await moviesRepository.createMovie({
       title,
       description,
       releaseDate,
       categoryId
     });
-
     return createdMovie;
   },
 
-  // Actualiza una película por su ID
-  updateMovie: async (id, data) => {
-    return await moviesRepository.updateById(id, data);
+  async updateMovieByTitle(oldTitle, data) {
+    return await moviesRepository.updateByTitle(oldTitle, data);
   },
 
-  // Elimina una película por su ID
-  deleteMovie: async (id) => {
-    return await moviesRepository.deleteMovie(id);
+  async deleteMovieByTitle(title) {
+    return await moviesRepository.deleteMovieByTitle(title);
   },
 
-  // Obtiene las películas que se consideran novedades (por ejemplo, estrenadas hace menos de 3 semanas)
-  getNewReleases: async () => {
-    return await moviesRepository.getNewReleases();
+  async getRecentReleases() {
+    return await moviesRepository.getRecentReleases();
   },
+
+  async updateMovieByTitle(oldTitle, data) {
+    // Si necesitas actualizar la categoría por nombre:
+    const { title, description, releaseDate, categoryName } = data;
+    let categoryId = null;
+    
+    if (categoryName) {
+      categoryId = await categoriesRepository.findCategoryIdByName(categoryName);
+      if (!categoryId) {
+        const newCategory = await categoriesRepository.createCategory({ name: categoryName });
+        categoryId = newCategory.id;
+      }
+    }
+    
+    // Arma un objeto con los campos que quieras actualizar
+    const updateData = {
+      title,
+      description,
+      releaseDate,
+      categoryId
+    };
+    
+    const result = await moviesRepository.updateByTitle(oldTitle, updateData);
+    return result;
+  }
 };
 
 module.exports = MoviesService;
