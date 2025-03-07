@@ -1,18 +1,13 @@
+// repositories/usersRepository.js
 const pool = require('../../db');
 
 class UsersRepository {
-  async createUser(data) {
-    const { name, email, password } = data;
+  async createUser({ name, email, password }) {
     const [result] = await pool.query(
       'INSERT INTO Users (name, email, password) VALUES (?, ?, ?)',
       [name, email, password]
     );
     return { id: result.insertId, name, email };
-  }
-
-  async getById(id) {
-    const [rows] = await pool.query('SELECT * FROM Users WHERE id = ?', [id]);
-    return rows[0];
   }
 
   async markMovieAsWatched(userId, movieId) {
@@ -21,6 +16,11 @@ class UsersRepository {
       [userId, movieId]
     );
     return result;
+  }
+
+  async findUserByName(username) {
+    const [rows] = await pool.query('SELECT * FROM Users WHERE name = ?', [username]);
+    return rows[0];
   }
 
   async listUsersWithWatchedMovies() {

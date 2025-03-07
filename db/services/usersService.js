@@ -1,32 +1,42 @@
 // services/usersService.js
-const pool = require('../../db');
+const UsersRepository = require('../repositories/usersRepository');
+const MoviesRepository = require('../repositories/moviesRepository');
+const usersRepository = new UsersRepository();
+const moviesRepository = new MoviesRepository();
 
 const UsersService = {
-  createUser: async (data) => {
+  async createUser(data) {
     const { name, email, password } = data;
-    const [result] = await pool.query(
-      'INSERT INTO Users (name, email, password) VALUES (?, ?, ?)',
-      [name, email, password]
-    );
-    return { id: result.insertId, name, email };
+    const newUser = await usersRepository.createUser({ name, email, password });
+    return newUser;
   },
 
-  markMovieAsWatched: async (userId, movieId) => {
-    await pool.query(
-      'INSERT INTO WatchedMovies (userId, movieId) VALUES (?, ?)',
-      [userId, movieId]
-    );
+  async markMovieAsWatched(userId, movieId) {
+    return await usersRepository.markMovieAsWatched(userId, movieId);
   },
 
-  listUsersWithWatchedMovies: async () => {
-    const [rows] = await pool.query(`
-      SELECT u.id as userId, u.name, GROUP_CONCAT(m.title SEPARATOR ', ') AS watchedMovies
-      FROM Users u
-      LEFT JOIN WatchedMovies wm ON u.id = wm.userId
-      LEFT JOIN Movies m ON wm.movieId = m.id
-      GROUP BY u.id, u.name
-    `);
-    return rows;
+  // Nuevo método para marcar película vista usando username y movieTitle
+  async markMovieAsWatchedByUsernameAndTitle(username, movieTitle) {
+    // Buscar usuario por username
+    const user = await usersRepository.findUserByName(username);
+    if (!user) {
+      throw new Error(`User "${username}" not found`);
+    }
+    
+    // Buscar la película por título (búsqueda flexible, case-insensitive)
+    const movies = await moviesRepository.findByTitle(movieTitle);
+    if (!movies || movies.length === 0) {
+      throw new Error(`Movie with title "${movieTitle}" not found`);
+    }
+    // Usamos la primera coincidencia
+    const movieId = movies[0].id;
+    
+    // Marcar la película como vista para el usuario
+    return await usersRepository.markMovieAsWatched(user.id, movieId);
+  },
+
+  async listUsersWithWatchedMovies() {
+    return await usersRepository.listUsersWithWatchedMovies();
   },
 };
 

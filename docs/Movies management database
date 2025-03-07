@@ -1,0 +1,53 @@
+-- Tabla Categories
+CREATE TABLE IF NOT EXISTS Categories (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(50) NOT NULL UNIQUE
+);
+
+-- Insertar categorías precargadas (evita duplicados con INSERT IGNORE)
+INSERT IGNORE INTO Categories (name) VALUES
+('Horror'),
+('Thriller'),
+('Drama'),
+('Comedy'),
+('Action'),
+('Romance'),
+('Science Fiction'),
+('Adventure');
+
+-- Tabla Movies
+CREATE TABLE IF NOT EXISTS Movies (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  title VARCHAR(100) NOT NULL,
+  description TEXT,
+  releaseDate DATE NOT NULL,
+  categoryId INT,
+  FOREIGN KEY (categoryId) REFERENCES Categories(id)
+);
+
+-- Tabla Users
+CREATE TABLE IF NOT EXISTS Users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  email VARCHAR(100) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL
+);
+
+-- Tabla intermedia WatchedMovies
+CREATE TABLE IF NOT EXISTS WatchedMovies (
+  userId INT,
+  movieId INT,
+  watchedDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (userId, movieId),
+  FOREIGN KEY (userId) REFERENCES Users(id),
+  FOREIGN KEY (movieId) REFERENCES Movies(id)
+);
+
+
+.env para informacion usada del codigo base:
+MYSQL_HOST=switchback.proxy.rlwy.net
+MYSQL_PORT=59535
+MYSQL_DATABASE=railway
+MYSQL_USER=root
+MYSQL_PASSWORD=XcnifFkISJPWXFFRgweqpMrniBzjxGri
+PORT=3000

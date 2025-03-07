@@ -1,0 +1,29 @@
+1. ¿Cuál es el propósito de "module.exports"?
+El propósito de module.exports en Node.js es permitir la exportación de funciones, objetos o variables desde un módulo para que puedan ser utilizados en otros archivos. Esto facilita la organización del código y la reutilización de funcionalidades.
+
+2. ¿Qué es un middleware?
+Un middleware es una función que se ejecuta en el ciclo de solicitud-respuesta de una aplicación, generalmente en frameworks como Express.js. Su propósito es procesar la solicitud (request) o la respuesta (response) antes de que lleguen a su destino final. Por ejemplo, un middleware puede usarse para autenticar usuarios o validar datos.
+
+3. ¿Cuál es la diferencia entre código bloqueante y código no bloqueante?
+
+Código bloqueante: Es aquel que detiene la ejecución del programa hasta que se completa una operación, como la lectura de un archivo o una consulta a una base de datos. Esto puede hacer que la aplicación sea menos eficiente.
+
+Código no bloqueante: Permite que el programa continúe ejecutando otras tareas mientras se completa una operación asíncrona. Esto mejora el rendimiento y la escalabilidad de la aplicación.
+
+4. ¿Qué biblioteca de JavaScript usaría para manejar datos en tiempo real?
+Para manejar datos en tiempo real, se puede usar la biblioteca Socket.IO, que permite la comunicación bidireccional entre el cliente y el servidor en tiempo real.
+
+5. ¿Cuál es la principal ventaja de trabajar un proyecto dockerizado?
+La principal ventaja de trabajar con un proyecto dockerizado es la portabilidad y consistencia. Docker permite empaquetar una aplicación con todas sus dependencias en un contenedor, lo que garantiza que funcione de la misma manera en cualquier entorno (desarrollo, pruebas, producción).
+
+6. ¿Cuál es la diferencia entre una imagen y un volumen en Docker?
+
+Imagen: Es una plantilla de solo lectura que contiene el código, las bibliotecas y las dependencias necesarias para ejecutar una aplicación.
+
+Volumen: Es un mecanismo para persistir datos generados por los contenedores. A diferencia de las imágenes, los volúmenes permiten almacenar datos de manera persistente, incluso si el contenedor se elimina.
+
+7. ¿Con qué herramienta se puede orquestar un proyecto con múltiples imágenes en Docker?
+Para orquestar un proyecto con múltiples imágenes en Docker, se puede usar Docker Compose. Esta herramienta permite definir y gestionar múltiples contenedores como parte de una sola aplicación.
+
+8. ¿Cuál es la principal ventaja de trabajar con un clúster de Kubernetes?
+La principal ventaja de trabajar con un clúster de Kubernetes es la capacidad de gestionar y escalar aplicaciones de manera eficiente en un entorno distribuido. Kubernetes automatiza tareas como el despliegue, el escalado y la recuperación de aplicaciones, lo que mejora la disponibilidad y la resiliencia del sistema.

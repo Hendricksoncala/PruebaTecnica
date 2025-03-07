@@ -13,16 +13,29 @@ class UsersController {
   }
 
   async markMovieAsWatched(req, res) {
-    const { userId } = req.params;
-    const { movieId } = req.body;
-    if (!movieId) {
-      return res.status(400).json({ error: 'Missing movie ID' });
-    }
     try {
+      const { userId } = req.params;
+      const { movieId } = req.body;
+      if (!movieId) {
+        return res.status(400).json({ error: 'Movie ID is required' });
+      }
       await usersService.markMovieAsWatched(userId, movieId);
-      res.json({ message: 'Movie marked as watched' });
+      res.json({ message: 'Movie marked as watched successfully' });
     } catch (error) {
       res.status(500).json({ error: 'Error marking movie as watched' });
+    }
+  }
+
+  async markMovieAsWatchedByUsernameAndTitle(req, res) {
+    try {
+      const { username, movieTitle } = req.params;
+      if (!username || !movieTitle) {
+        return res.status(400).json({ error: 'Username and movie title are required' });
+      }
+      await usersService.markMovieAsWatchedByUsernameAndTitle(username, movieTitle);
+      res.json({ message: 'Movie marked as watched successfully' });
+    } catch (error) {
+      res.status(500).json({ error: 'Error marking movie as watched', detail: error.message });
     }
   }
 

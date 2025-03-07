@@ -84,9 +84,11 @@ class MoviesRepository {
     return rows;
   }
 
-  async getNewReleases() {
+
+
+  async getRecentReleases() {
     const sql = `
-      SELECT m.*, c.name as categoryName
+      SELECT m.*, c.name AS categoryName
       FROM Movies m
       JOIN Categories c ON m.categoryId = c.id
       WHERE m.releaseDate >= DATE_SUB(CURDATE(), INTERVAL 3 WEEK)
@@ -95,6 +97,8 @@ class MoviesRepository {
     const [rows] = await pool.query(sql);
     return rows;
   }
+
+
 }
 
 module.exports = MoviesRepository;

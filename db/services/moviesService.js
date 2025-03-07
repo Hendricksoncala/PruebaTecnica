@@ -43,7 +43,6 @@ const MoviesService = {
   async deleteMovieByTitle(title) {
     return await moviesRepository.deleteMovieByTitle(title);
   },
-
   async getRecentReleases() {
     return await moviesRepository.getRecentReleases();
   },
